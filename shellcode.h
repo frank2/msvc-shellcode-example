@@ -119,3 +119,6 @@ IAT *iat(void);
 uint8_t *get_import_by_hash(uint8_t *module, uint32_t hash);
 char *target_filename(void);
 char *target_url(void);
+uint32_t fnv321a(const char *str);
+size_t strlen_local(const char *str);
+void memcpy_local(void *dest, const void *src, size_t size);
