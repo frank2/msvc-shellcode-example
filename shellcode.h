@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <windows.h>
+#include <winternl.h>
 
 typedef PVOID PACTIVATION_CONTEXT;
 
