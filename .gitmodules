@@ -1,0 +1,3 @@
+[submodule "binobj"]
+	path = binobj
+	url = https://github.com/TaleTN/binobj.git
