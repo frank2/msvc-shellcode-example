@@ -5,7 +5,7 @@
 #include <windows.h>
 
 int main(int argc, char *argv[]) {
-   // usage: extract_section [executable] [section] [output file]
+   // usage: extract_section [executable] [section] [output file] [output header]
    if (argc != 4)
       return 1;
 
@@ -59,6 +59,17 @@ int main(int argc, char *argv[]) {
    
    if (!WriteFile(dump_handle, &bin_data[section->VirtualAddress], section->Misc.VirtualSize, &bytes_written, NULL))
       return 6;
+
+   HANDLE header_handle = CreateFileA(argv[3], GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+   if (header_handle == INVALID_HANDLE_VALUE)
+      return 7;
+   
+   char size_header_buffer[1024];
+   snprintf(&size_header_buffer[0], 1024, "#pragma once\n#define SHELLCODE_SIZE %d\n", bin_size);
+
+   if (!WriteFile(header_handle, &size_header_buffer[0], strlen(&size_header_buffer[0]), &bytes_written, NULL))
+      return 8;
 
    return 0;
 }

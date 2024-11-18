@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <windows.h>
 
+#include "shellcode_gen.h"
+
 extern uint8_t SHELLCODE_DATA[];
 
 int main(int argc, char *argv[]) {
