@@ -62,6 +62,7 @@ __declspec(code_seg(".sc$001"), naked) IAT *iat(void) {
       add eax, 5
       ret
    }
+}
 #endif
 
 #pragma section(".sc$002", read, execute)
@@ -131,7 +132,6 @@ __declspec(code_seg(".sc$004"), naked) char *target_filename(void) {
    }
 }
 #pragma comment(linker, "/INCLUDE:TARGET_FILENAME")
-#pragma comment(linker, "/INCLUDE:_target_filename")
 #endif
 
 #pragma section(".sc$005", read, execute)
@@ -154,7 +154,6 @@ __declspec(code_seg(".sc$006"), naked) char *target_url(void) {
    }
 }
 #pragma comment(linker, "/INCLUDE:TARGET_URL")
-#pragma comment(linker, "/INCLUDE:_target_url")
 #endif
 
 #pragma section(".sc$007", read, execute)
