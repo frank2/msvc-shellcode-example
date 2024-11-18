@@ -58,8 +58,10 @@ int main(int argc, char *argv[]) {
 
    DWORD bytes_written;
    
-   if (!WriteFile(dump_handle, &bin_data[section->VirtualAddress], section->Misc.VirtualSize, &bytes_written, NULL))
+   if (!WriteFile(dump_handle, &bin_data[section->VirtualAddress], section->Misc.VirtualSize, &bytes_written, NULL)) {
+      printf("Last error: %08x", GetLastError());
       return 6;
+   }
 
    HANDLE header_handle = CreateFileA(argv[3], GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
