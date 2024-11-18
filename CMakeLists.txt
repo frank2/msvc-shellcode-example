@@ -35,6 +35,6 @@ enable_testing()
 add_executable(test_shellcode test.c)
 target_include_directories(test_shellcode PUBLIC
   "${CMAKE_CURRENT_BINARY_DIR}")
-add_dependencies(shellcode test_shellcode)
+add_dependencies(test_shellcode shellcode)
 target_link_libraries(test_shellcode "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.obj")
 add_test(NAME test_shellcode COMMAND test_shellcode)

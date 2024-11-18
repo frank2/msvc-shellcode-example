@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
    if (bin_handle == INVALID_HANDLE_VALUE)
       return 2;
 
-   DWORD bin_size = GetFileSize(bin_handle);
+   DWORD bin_size = GetFileSize(bin_handle, NULL);
    uint8_t *bin_data = (uint8_t *)malloc(bin_size);
    DWORD bytes_read;
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
    PIMAGE_SECTION_HEADER section_table = (PIMAGE_SECTION_HEADER)&bin_data[dos_header->e_lfanew+sizeof(DWORD)+sizeof(IMAGE_FILE_HEADER)+nt_headers->FileHeader.SizeOfOptionalHeader];
    PIMAGE_SECTION_HEADER section = NULL;
 
-   uint8 target_section[8];
+   uint8_t target_section[8];
    memset(&target_section[0], 0, 8);
    memcpy(&target_section[0], argv[2], strlen(argv[2]));
 
