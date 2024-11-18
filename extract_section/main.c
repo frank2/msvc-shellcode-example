@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]) {
    // usage: extract_section [executable] [section] [output file] [output header]
-   if (argc != 4)
+   if (argc != 5)
       return 1;
 
    HANDLE bin_handle = CreateFileA(argv[1], GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
