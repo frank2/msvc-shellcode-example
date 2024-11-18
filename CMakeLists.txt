@@ -23,12 +23,12 @@ endif()
 
 add_custom_command(TARGET shellcode
   POST_BUILD
-  COMMAND "$<TARGET_FILE:extract_section>" "$<TARGET_FILE:shellcode>" .sc "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.bin"
+  COMMAND "$<TARGET_FILE:extract_section>" "$<TARGET_FILE:shellcode>" .sc "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.bin" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode_gen.h"
   VERBATIM)
 
 add_custom_command(TARGET shellcode
   POST_BUILD
-  COMMAND "$<TARGET_FILE:binobj>" "${SHELLCODE_TEST_VAR}" 1 "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.bin" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.obj" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode_gen.h"
+  COMMAND "$<TARGET_FILE:binobj>" "${SHELLCODE_TEST_VAR}" 1 "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.bin" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.obj"
   VERBATIM)
 
 enable_testing()
