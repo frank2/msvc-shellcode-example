@@ -2,6 +2,39 @@ cmake_minimum_required(VERSION 3.15)
 
 project(shellcode C)
 add_library(shellcode SHARED main.c)
+add_subdirectory(extract_section)
+add_subdirectory(binobj)
+add_dependencies(shellcode extract_section binobj)
 target_include_directories(shellcode PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# setting the shellcode section RWX makes testing easier
 target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE")
+
+# disable stack checks because we can't relocate those functions
+target_compile_options(shellcode PUBLIC "/GS-")
+
+if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
+  target_compile_options(shellcode PUBLIC "/ARCH:IA32") # disable xmm registers
+  set(SHELLCODE_TEST_VAR "_SHELLCODE_DATA")
+else()
+  set(SHELLCODE_TEST_VAR "SHELLCODE_DATA")
+endif()
+
+add_custom_command(TARGET shellcode
+  POST_BUILD
+  COMMAND "$<TARGET_FILE:extract_section>" "$<TARGET_FILE:shellcode>" .sc "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.bin"
+  VERBATIM)
+
+add_custom_command(TARGET shellcode
+  POST_BUILD
+  COMMAND "$<TARGET_FILE:binobj>" "${SHELLCODE_TEST_VAR}" 1 "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.bin" "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.obj"
+  VERBATIM)
+
+enable_testing()
+add_executable(test_shellcode test.c)
+add_dependencies(shellcode test_shellcode)
+file(SIZE "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.bin" SHELLCODE_SIZE)
+target_link_libraries(test_shellcode "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/shellcode.obj")
+target_compile_definitions(test_shellcode PUBLIC SHELLCODE_SIZE=${SHELLCODE_SIZE})
+add_test(NAME test_shellcode COMMAND test_shellcode)
