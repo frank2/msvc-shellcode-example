@@ -56,12 +56,9 @@ int main(int argc, char *argv[]) {
    if (dump_handle == INVALID_HANDLE_VALUE)
       return 5;
 
-   DWORD bytes_written;
+   DWORD bytes_written = 0;
 
-   uint8_t *section_copy = (uint8_t *)malloc(section->Misc.VirtualSize);
-   memcpy(section_copy, &bin_data[section->VirtualAddress], section->Misc.VirtualSize);
-   
-   if (!WriteFile(dump_handle, section_copy, section->Misc.VirtualSize, &bytes_written, NULL)) {
+   if (!WriteFile(dump_handle, &bin_data[section->PointerToRawData], section->Misc.VirtualSize, &bytes_written, NULL)) {
       printf("Last error: %08x", GetLastError());
       return 6;
    }
