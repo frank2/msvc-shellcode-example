@@ -15,6 +15,10 @@ target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE" "/INCREMENTAL:NO")
 # disable stack checks because we can't relocate those functions
 target_compile_options(shellcode PUBLIC "/GS-")
 
+# remove runtime checks from the build flags
+string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+
 if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
   target_compile_options(shellcode PUBLIC "/arch:IA32") # disable xmm registers
   set(SHELLCODE_TEST_VAR "_SHELLCODE_DATA")
