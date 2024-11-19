@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
       return 7;
    
    char size_header_buffer[1024];
-   snprintf(&size_header_buffer[0], 1024, "#pragma once\n#define SHELLCODE_SIZE %d\n", bin_size);
+   snprintf(&size_header_buffer[0], 1024, "#pragma once\n#define SHELLCODE_SIZE %d\n", section->Misc.VirtualSize);
 
    if (!WriteFile(header_handle, &size_header_buffer[0], strlen(&size_header_buffer[0]), &bytes_written, NULL)) {
       CloseHandle(header_handle);
