@@ -59,11 +59,13 @@ int main(int argc, char *argv[]) {
    DWORD bytes_written = 0;
 
    if (!WriteFile(dump_handle, &bin_data[section->PointerToRawData], section->Misc.VirtualSize, &bytes_written, NULL)) {
-      printf("Last error: %08x", GetLastError());
+      CloseHandle(dump_handle);
       return 6;
    }
 
-   HANDLE header_handle = CreateFileA(argv[3], GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+   CloseHandle(dump_handle);
+   
+   HANDLE header_handle = CreateFileA(argv[4], GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
    if (header_handle == INVALID_HANDLE_VALUE)
       return 7;
@@ -71,8 +73,12 @@ int main(int argc, char *argv[]) {
    char size_header_buffer[1024];
    snprintf(&size_header_buffer[0], 1024, "#pragma once\n#define SHELLCODE_SIZE %d\n", bin_size);
 
-   if (!WriteFile(header_handle, &size_header_buffer[0], strlen(&size_header_buffer[0]), &bytes_written, NULL))
+   if (!WriteFile(header_handle, &size_header_buffer[0], strlen(&size_header_buffer[0]), &bytes_written, NULL)) {
+      CloseHandle(header_handle);
       return 8;
+   }
+
+   CloseHandle(header_handle);
 
    return 0;
 }
