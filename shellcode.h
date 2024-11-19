@@ -122,3 +122,4 @@ char *download_command(void);
 uint32_t fnv321a(const char *str);
 size_t strlen_local(const char *str);
 void memcpy_local(void *dest, const void *src, size_t size);
+void *memset(void *dest, uint8_t value, size_t size); 

