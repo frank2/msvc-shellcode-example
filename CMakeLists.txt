@@ -17,8 +17,8 @@ target_compile_options(shellcode PUBLIC "/GS-")
 # enable minor optimizations to optimize out the jumps
 target_compile_options(shellcode PUBLIC "/O1")
 
-# I don't know the default flags to set so we set /RTCc to make the build compatible with optimization
-target_compile_options(shellcode PUBLIC "/RTCc")
+string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
 
 # enable inline expansion so we don't generate jump funcions
 target_compile_options(shellcode PUBLIC "/Ob2")
