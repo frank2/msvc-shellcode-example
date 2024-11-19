@@ -27,13 +27,10 @@ __declspec(code_seg(".sc$000")) int shellcode(LPVOID arg) {
    STARTUPINFOA startup_info;
    PROCESS_INFORMATION process_information;
 
-   for (size_t i=0; i<sizeof(STARTUPINFOA); ++i)
-      ((uint8_t *)(&startup_info))[i] = 0;
-   
+   memset(&startup_info, 0, sizeof(STARTUPINFOA));   
    startup_info.cb = sizeof(STARTUPINFOA);
-   
-   for (size_t i=0; i<sizeof(PROCESS_INFORMATION); ++i)
-      ((uint8_t *)(&process_information))[i] = 0;
+
+   memset(&process_information, 0, sizeof(PROCESS_INFORMATION));
 
    if (!iat()->CreateProcess(NULL, command, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_information))
       return 1;
@@ -196,6 +193,7 @@ __declspec(code_seg(".sc$c00a")) void memcpy_local(void *dest, const void *src, 
 }
 
 #pragma section(".sc$c00b", read, execute)
+#pragma function(memset)
 __declspec(code_seg(".sc$c00b")) void *memset(void *dest, uint8_t value, size_t size) {
    for (size_t i=0; i<size; ++i)
       ((uint8_t *)dest)[i] = value;
