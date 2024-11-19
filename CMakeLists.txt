@@ -9,19 +9,14 @@ target_include_directories(shellcode PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # setting the shellcode section RWX makes testing easier
-target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE")
+# disable incremental linking to make the memory map similar between debug and release builds
+target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE /INCREMENTAL:NO")
 
 # disable stack checks because we can't relocate those functions
-# enable inline expansion
-# enable mild optimization
-target_compile_options(shellcode PUBLIC "/GS-" "/O1" "/Ob2")
-
-# remove the runtime checks
-string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+target_compile_options(shellcode PUBLIC "/GS-")
 
 if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
-  target_compile_options(shellcode PUBLIC "/ARCH:IA32") # disable xmm registers
+  target_compile_options(shellcode PUBLIC "/arch:IA32") # disable xmm registers
   set(SHELLCODE_TEST_VAR "_SHELLCODE_DATA")
 else()
   set(SHELLCODE_TEST_VAR "SHELLCODE_DATA")
