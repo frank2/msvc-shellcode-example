@@ -12,16 +12,13 @@ target_include_directories(shellcode PUBLIC
 target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE")
 
 # disable stack checks because we can't relocate those functions
-target_compile_options(shellcode PUBLIC "/GS-")
+# enable inline expansion
+# enable mild optimization
+target_compile_options(shellcode PUBLIC "/GS-" "/O1" "/Ob2")
 
-# enable minor optimizations to optimize out the jumps
-target_compile_options(shellcode PUBLIC "/O1")
-
+# remove the runtime checks
 string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-
-# enable inline expansion so we don't generate jump funcions
-target_compile_options(shellcode PUBLIC "/Ob2")
 
 if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
   target_compile_options(shellcode PUBLIC "/ARCH:IA32") # disable xmm registers
