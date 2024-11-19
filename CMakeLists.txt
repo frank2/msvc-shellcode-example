@@ -14,6 +14,9 @@ target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE")
 # disable stack checks because we can't relocate those functions
 target_compile_options(shellcode PUBLIC "/GS-")
 
+# enable minor optimizations to optimize out the jumps
+target_compile_options(shellcode PUBLIC "/O1")
+
 if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
   target_compile_options(shellcode PUBLIC "/ARCH:IA32") # disable xmm registers
   set(SHELLCODE_TEST_VAR "_SHELLCODE_DATA")
