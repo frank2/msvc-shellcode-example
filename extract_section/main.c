@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
       return 4;
 
    HANDLE dump_handle = CreateFileA(argv[3], GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-e
+
    if (dump_handle == INVALID_HANDLE_VALUE)
       return 5;
 
