@@ -10,7 +10,7 @@ target_include_directories(shellcode PUBLIC
 
 # setting the shellcode section RWX makes testing easier
 # disable incremental linking to make the memory map similar between debug and release builds
-target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE /INCREMENTAL:NO")
+target_link_options(shellcode PUBLIC "/SECTION:.sc,RWE" "/INCREMENTAL:NO")
 
 # disable stack checks because we can't relocate those functions
 target_compile_options(shellcode PUBLIC "/GS-")
