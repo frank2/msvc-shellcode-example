@@ -17,6 +17,12 @@ target_compile_options(shellcode PUBLIC "/GS-")
 # enable minor optimizations to optimize out the jumps
 target_compile_options(shellcode PUBLIC "/O1")
 
+# I don't know the default flags to set so we set /RTCc to make the build compatible with optimization
+target_compile_options(shellcode PUBLIC "/RTCc")
+
+# enable inline expansion so we don't generate jump funcions
+target_compile_options(shellcode PUBLIC "/Ob2")
+
 if(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32")
   target_compile_options(shellcode PUBLIC "/ARCH:IA32") # disable xmm registers
   set(SHELLCODE_TEST_VAR "_SHELLCODE_DATA")
